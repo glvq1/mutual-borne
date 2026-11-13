@@ -156,6 +156,34 @@
     .cf-cons { margin-top: 10px; font-size: 18px; color: var(--text); }
     .cf-pastille { display: inline-block; width: 14px; height: 14px; border-radius: 50%; margin-right: 8px; vertical-align: middle; }
 
+    /* [PERF] Ma performance (privé : seulement l'opérateur connecté) */
+    .pf-tete { display: flex; align-items: center; gap: 16px; background: var(--secondary); color: #fff; border-radius: 18px; padding: 16px 20px; margin-bottom: 16px; }
+    .pf-tete .ico { width: 60px; height: 60px; border-radius: 14px; background: rgba(255,255,255,.16); display: flex; align-items: center; justify-content: center; font-size: 30px; flex: none; }
+    .pf-tete h1 { margin: 0; font-size: 26px; }
+    .pf-tete small { display: block; font-size: 16px; font-weight: 600; opacity: .9; margin-top: 2px; }
+    .pf-cartes { display: grid; grid-template-columns: minmax(0, 1.25fr) minmax(0, 1fr) minmax(0, 1fr); gap: 14px; margin-bottom: 18px; }
+    .pf-carte { background: #fff; border: 2px solid var(--line); border-radius: 18px; padding: 16px 18px; }
+    .pf-lbl { font-size: 15px; color: var(--muted); font-weight: 700; }
+    .pf-val { font-size: 42px; font-weight: 900; line-height: 1.15; font-variant-numeric: tabular-nums; margin: 4px 0 6px; }
+    .pf-carte.hero .pf-val { font-size: 60px; }
+    .pf-val.vert { color: var(--green); } .pf-val.orange { color: var(--amber); } .pf-val.rouge { color: var(--red); } .pf-val.gris { color: #b5aa94; }
+    .pf-badge { display: inline-flex; align-items: center; gap: 6px; border-radius: 999px; padding: 4px 12px; font-size: 15px; font-weight: 800; }
+    .pf-badge.vert { background: var(--green-bg); color: var(--green); } .pf-badge.orange { background: var(--amber-bg); color: var(--amber); }
+    .pf-badge.rouge { background: var(--red-bg); color: var(--red); } .pf-badge.gris { background: var(--soft); color: var(--muted); }
+    .pf-sous { font-size: 15px; color: var(--muted); font-weight: 700; }
+    .pf-jauge { height: 10px; background: var(--soft); border-radius: 5px; margin-top: 10px; overflow: hidden; }
+    .pf-jauge span { display: block; height: 100%; background: var(--primary); border-radius: 5px; }
+    .pf-bloc { background: #fff; border: 2px solid var(--line); border-radius: 18px; padding: 16px 18px; margin-bottom: 16px; }
+    .pf-bloc h2 { font-size: 20px; margin: 0 0 8px; }
+    .pf-legende { display: flex; flex-wrap: wrap; gap: 16px; font-size: 14px; color: var(--muted); font-weight: 700; margin-bottom: 6px; }
+    .pf-legende span { display: inline-flex; align-items: center; gap: 6px; }
+    .pf-legende i { width: 14px; height: 14px; border-radius: 3px; display: inline-block; }
+    .pf-legende i.trait { width: 18px; height: 0; border-top: 3px dashed var(--secondary); border-radius: 0; }
+    .pf-graph { position: relative; height: 260px; }
+    .pf-graph.petit { height: 220px; }
+    .pf-pied { display: flex; justify-content: space-between; flex-wrap: wrap; gap: 8px; font-size: 14px; color: var(--muted); font-weight: 600; }
+    @media (max-width: 860px) { .pf-cartes { grid-template-columns: 1fr 1fr; } .pf-carte.hero { grid-column: span 2; } }
+
     /* Divers */
     .toast { position: fixed; left: 50%; bottom: 26px; transform: translateX(-50%); background: #3a3a3a; color: #fff; padding: 16px 22px; border-radius: 14px;
       font-weight: 700; z-index: 20; max-width: 90vw; box-shadow: 0 8px 30px rgba(0,0,0,.25); }
@@ -245,6 +273,7 @@
         <button type="button" class="tuile" onclick="ouvrirForm('divers')"><span class="ico">✏️</span>Autre<small>J'écris moi-même</small></button>
         <button type="button" class="tuile" onclick="aller('eQhseMenu')"><span class="ico">⛑️</span>QHSE<small>Qualité, hygiène, sécurité, environnement</small></button>
         <button type="button" class="tuile" onclick="aller('eVetMenu')"><span class="ico">🧤</span>Vêtements et EPI<small>Bottes, gants, veste, cotte…</small></button>
+        <button type="button" class="tuile secondaire" onclick="ouvrirPerf()"><span class="ico">📈</span>Ma perf<small>Perf 8,33 · visible par toi seul</small></button>
         <button type="button" class="tuile secondaire" onclick="ouvrirMesDemandes()"><span class="ico">📦</span>Mes demandes<small>Vêtements et EPI · visible par toi seul</small></button>
         <button type="button" class="tuile secondaire" onclick="ouvrirSuivi()"><span class="ico">📋</span>Suivi des remontées<small>Statut et commentaires</small></button>
         <button type="button" class="tuile secondaire" onclick="ouvrirColis()"><span class="ico">🥚</span>Colis fragiles<small>Produits fragiles · consultation</small></button>
@@ -382,6 +411,51 @@
         <tbody id="suiviCorps"><tr><td colspan="5" class="vide">Chargement…</td></tr></tbody>
       </table>
     </section>
+    <!-- 10. [PERF] MA PERFORMANCE (privé : seulement le code connecté, lecture seule) -->
+    <section class="ecran" id="ePerf">
+      <button type="button" class="retour" onclick="aller('eAccueil')">← Retour</button>
+      <div class="pf-tete">
+        <span class="ico">📈</span>
+        <div><h1>Ma performance</h1><small id="pfSous">Chargement…</small></div>
+      </div>
+      <div id="pfCorps">
+        <div class="pf-cartes">
+          <div class="pf-carte hero">
+            <div class="pf-lbl" id="pfDernierLbl">Dernier jour</div>
+            <div class="pf-val" id="pfDernier">–</div>
+            <span class="pf-badge gris" id="pfDernierBadge">–</span>
+          </div>
+          <div class="pf-carte">
+            <div class="pf-lbl">Ma semaine</div>
+            <div class="pf-val" id="pfSemaine">–</div>
+            <div class="pf-sous" id="pfEcart"></div>
+          </div>
+          <div class="pf-carte">
+            <div class="pf-lbl">Jours à 100 % ou plus</div>
+            <div class="pf-val" id="pfNbOk">–</div>
+            <div class="pf-jauge"><span id="pfJauge" style="width:0"></span></div>
+          </div>
+        </div>
+        <div class="pf-bloc">
+          <h2 id="pfJoursTitre">Mes jours</h2>
+          <div class="pf-legende">
+            <span><i style="background:#3b6d11"></i>100 % et +</span>
+            <span><i style="background:#d98a1c"></i>90 à 99 %</span>
+            <span><i style="background:#b03a2e"></i>Moins de 90 %</span>
+            <span><i class="trait"></i>Objectif 100 %</span>
+          </div>
+          <div class="pf-graph" id="pfGraphJoursBoite"><canvas id="pfGraphJours" role="img" aria-label="Perf par jour de la semaine"></canvas></div>
+          <div class="vide" id="pfJoursVide" hidden>Pas de perf par jour cette semaine dans le fichier : seule ta perf de la semaine est disponible.</div>
+        </div>
+        <div class="pf-bloc">
+          <h2>Mes 6 dernières semaines</h2>
+          <div class="pf-graph petit"><canvas id="pfGraphSemaines" role="img" aria-label="Perf des 6 dernières semaines"></canvas></div>
+        </div>
+        <div class="pf-pied"><span id="pfMaj"></span><span>Perf 8,33 · objectif 100 %</span></div>
+      </div>
+      <div class="vide" id="pfVide" hidden></div>
+    </section>
+
     <!-- 9. [COLIS FRAGILES] RÉPERTOIRE (lecture seule, modifié dans Mutual Connect) -->
     <section class="ecran" id="eColis">
       <button type="button" class="retour" id="colisRetour">← Retour</button>
@@ -600,6 +674,7 @@
     codeOperateur = ''; nomOperateur = '';
     formType = null;
     vetSel = {}; vetPanier = []; repSel = {}; qhseSel = {};
+    perfEffacer(); // [PERF] la perf du précédent opérateur ne reste jamais à l'écran
     demarrerIdent();
   }
 
@@ -1275,6 +1350,138 @@
   }
 
   // ----- Réseau, démarrage -----
+  // ----- [PERF] Ma performance (action 'perf', Perf.gs) : seulement l'opérateur connecté -----
+  // Couleurs : ≥ 100 % vert, 90 à 99 % orange, < 90 % rouge. Chart.js est chargé à la 1re ouverture (assets/).
+  const PERF_COULEURS = { vert: '#3b6d11', orange: '#d98a1c', rouge: '#b03a2e' };
+  const PERF_JOURS_LONGS = { Dimanche: 'dim.', Lundi: 'lun.', Mardi: 'mar.', Mercredi: 'mer.', Jeudi: 'jeu.', Vendredi: 'ven.', Samedi: 'sam.' };
+  let perfGraphs = [], chartPromesse = null, perfAppel = 0;
+
+  function perfClasse(p) { return p == null ? 'gris' : p >= 100 ? 'vert' : p >= 90 ? 'orange' : 'rouge'; }
+  function perfTexte(p) { return p == null ? '–' : p + ' %'; }
+
+  function chargerChart() {
+    if (window.Chart) return Promise.resolve();
+    if (!chartPromesse) chartPromesse = new Promise((ok, ko) => {
+      const s = document.createElement('script');
+      s.src = 'assets/chart.umd.min.js';
+      s.onload = ok;
+      s.onerror = () => { chartPromesse = null; ko(new Error('Graphiques indisponibles.')); };
+      document.head.appendChild(s);
+    });
+    return chartPromesse;
+  }
+
+  function perfEffacer() {
+    perfAppel++;
+    perfGraphs.forEach(g => g.destroy());
+    perfGraphs = [];
+    ['pfDernier', 'pfSemaine', 'pfNbOk'].forEach(id => { $(id).textContent = '–'; $(id).className = 'pf-val'; });
+    $('pfDernierLbl').textContent = 'Dernier jour';
+    $('pfDernierBadge').className = 'pf-badge gris'; $('pfDernierBadge').textContent = '–';
+    $('pfEcart').textContent = ''; $('pfJauge').style.width = '0';
+    $('pfSous').textContent = 'Chargement…'; $('pfMaj').textContent = '';
+    $('pfCorps').hidden = false; $('pfVide').hidden = true;
+  }
+
+  async function ouvrirPerf() {
+    perfEffacer();
+    const appelN = perfAppel;
+    aller('ePerf');
+    chargement(true);
+    try {
+      const [r] = await Promise.all([appel('perf', { code: codeOperateur }), chargerChart()]);
+      if (appelN !== perfAppel) return; // déconnecté entre-temps
+      if (!r.success) throw new Error(r.error);
+      rendrePerf(r);
+    } catch (e) {
+      if (appelN !== perfAppel) return;
+      $('pfSous').textContent = nomOperateur;
+      $('pfCorps').hidden = true; $('pfVide').hidden = false;
+      $('pfVide').textContent = (e && e.message) || 'Perf indisponible (réseau ?). Réessaie.';
+    } finally {
+      chargement(false);
+    }
+  }
+
+  function rendrePerf(r) {
+    $('pfSous').textContent = (r.nom || nomOperateur) + (r.semaine ? ' · semaine ' + r.semaine : '');
+    if (r.vide || !r.trouve) {
+      $('pfCorps').hidden = true; $('pfVide').hidden = false;
+      $('pfVide').textContent = r.vide ? 'Aucune perf importée pour le moment.' : "Pas encore de perf à ton nom. Si ça dure, préviens ton chef d'équipe.";
+      return;
+    }
+    // Carte 1 : dernier jour travaillé de la semaine
+    const d = r.dernier;
+    $('pfDernierLbl').textContent = d ? 'Dernier jour · ' + PERF_JOURS_LONGS[d.jour] + ' ' + d.date : 'Dernier jour';
+    $('pfDernier').textContent = d ? perfTexte(d.perf) : '–';
+    $('pfDernier').className = 'pf-val ' + perfClasse(d && d.perf);
+    const c1 = perfClasse(d && d.perf);
+    $('pfDernierBadge').className = 'pf-badge ' + c1;
+    $('pfDernierBadge').textContent = { vert: '✔ Objectif atteint', orange: '➜ Presque', rouge: '✖ Sous l\'objectif', gris: 'Pas de perf jour' }[c1];
+    // Carte 2 : semaine + écart avec la précédente
+    $('pfSemaine').textContent = perfTexte(r.perfSemaine);
+    $('pfSemaine').className = 'pf-val ' + perfClasse(r.perfSemaine);
+    $('pfEcart').textContent = r.ecart == null ? '' : (r.ecart > 0 ? '▲ +' : r.ecart < 0 ? '▼ ' : '= ') + r.ecart + ' pts vs sem. ' + r.semainePrec;
+    // Carte 3 : jours ≥ 100 %
+    $('pfNbOk').textContent = r.nbJours ? r.nbOk + ' / ' + r.nbJours : '–';
+    $('pfJauge').style.width = r.nbJours ? Math.round(r.nbOk / r.nbJours * 100) + '%' : '0';
+    $('pfJoursTitre').textContent = 'Mes jours · semaine ' + r.semaine;
+    $('pfMaj').textContent = r.maj ? '🔄 Mise à jour : ' + r.maj : '';
+
+    // Graphique des jours (dimanche affiché seulement s'il a une perf)
+    const jours = (r.jours || []).filter(j => j.jour !== 'Dimanche' || j.perf != null);
+    const avecJours = jours.some(j => j.perf != null);
+    $('pfGraphJoursBoite').hidden = !avecJours; $('pfJoursVide').hidden = avecJours;
+    const vals = jours.map(j => j.perf);
+    const toutes = vals.concat((r.historique || []).map(h => h.perf)).filter(v => v != null);
+    const bas = Math.max(0, Math.floor((Math.min(80, ...toutes) - 5) / 10) * 10);
+    const haut = Math.ceil((Math.max(120, ...toutes) + 8) / 10) * 10;
+    const grille = '#ece5d4', texte = '#8c7a5a';
+    const etiquettes = {
+      id: 'etiquettes',
+      afterDatasetsDraw(chart) {
+        const ctx = chart.ctx;
+        const meta = chart.getDatasetMeta(0);
+        ctx.save();
+        ctx.font = '800 16px system-ui, sans-serif';
+        ctx.textAlign = 'center';
+        ctx.fillStyle = '#3a3a3a';
+        meta.data.forEach((el, i) => {
+          const v = chart.data.datasets[0].data[i];
+          if (v != null) ctx.fillText(v + ' %', el.x, el.y - 8);
+        });
+        ctx.restore();
+      }
+    };
+    const axes = () => ({ y: { min: bas, max: haut, ticks: { color: texte, font: { size: 14, weight: '700' }, callback: v => v + ' %' }, grid: { color: grille } },
+      x: { ticks: { color: texte, font: { size: 16, weight: '800' } }, grid: { display: false } } });
+    const objectif = n => ({ type: 'line', data: Array(n).fill(100), borderColor: '#8c7a5a', borderDash: [8, 5], borderWidth: 2, pointRadius: 0, order: 0 });
+
+    perfGraphs.forEach(g => g.destroy());
+    perfGraphs = [
+      new Chart($('pfGraphJours'), {
+        type: 'bar',
+        data: { labels: jours.map(j => j.lib + (j.date ? ' ' + j.date : '')),
+          datasets: [{ data: vals, backgroundColor: vals.map(v => PERF_COULEURS[perfClasse(v)] || '#ccc'), borderRadius: 8, maxBarThickness: 64, order: 1 }, objectif(jours.length)] },
+        options: { responsive: true, maintainAspectRatio: false, animation: { duration: 400 }, layout: { padding: { top: 22 } },
+          plugins: { legend: { display: false }, tooltip: { enabled: false } }, scales: axes() },
+        plugins: [etiquettes]
+      }),
+      new Chart($('pfGraphSemaines'), {
+        type: 'line',
+        data: { labels: (r.historique || []).map(h => h.lib),
+          datasets: [{ data: (r.historique || []).map(h => h.perf), borderColor: '#8c7a5a', backgroundColor: 'rgba(184,165,122,.18)', fill: true, tension: .3, spanGaps: true,
+            borderWidth: 3, pointRadius: 7, pointBorderColor: '#fff', pointBorderWidth: 2,
+            pointBackgroundColor: (r.historique || []).map(h => PERF_COULEURS[perfClasse(h.perf)] || '#ccc'), order: 1 }, objectif((r.historique || []).length)] },
+        options: { responsive: true, maintainAspectRatio: false, animation: { duration: 400 }, layout: { padding: { top: 22, left: 8, right: 8 } },
+          plugins: { legend: { display: false }, tooltip: { enabled: false } }, scales: Object.assign(axes(), { x: { offset: true, ticks: { color: texte, font: { size: 16, weight: '800' } }, grid: { display: false } } }) },
+        plugins: [etiquettes]
+      })
+    ];
+    $('pfGraphJours').setAttribute('aria-label', 'Perf par jour : ' + jours.map(j => j.lib + ' ' + perfTexte(j.perf)).join(', '));
+    $('pfGraphSemaines').setAttribute('aria-label', 'Perf par semaine : ' + (r.historique || []).map(h => h.lib + ' ' + perfTexte(h.perf)).join(', '));
+  }
+
   function majReseau() { $('horsLigne').hidden = navigator.onLine; }
   window.addEventListener('online', majReseau);
   window.addEventListener('offline', majReseau);
