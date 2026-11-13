@@ -1274,6 +1274,33 @@
     }).join('') : '<div class="vide">Aucun produit trouvé.</div>';
   }
 
+  // ----- Écran toujours allumé + reprise après mise en veille -----
+  // Wake Lock : empêche la tablette de se mettre en veille tant que la borne est affichée.
+  // Si la veille arrive quand même (batterie, bouton, Android), la page est rechargée au réveil
+  // pour éviter l'écran blanc qui obligeait à désépingler / redémarrer l'appli.
+  let verrouEcran = null, masqueDepuis = 0;
+  const RECHARGE_APRES_MS = 30000; // masquée plus de 30 s = considérée comme sortie de veille
+  async function garderEcranAllume() {
+    if (!('wakeLock' in navigator) || document.visibilityState !== 'visible' || verrouEcran) return;
+    try {
+      verrouEcran = await navigator.wakeLock.request('screen');
+      verrouEcran.addEventListener('release', () => { verrouEcran = null; });
+    } catch (e) { verrouEcran = null; } // refusé (économie d'énergie) : on retentera au prochain appui
+  }
+  function rechargerBorne() { location.reload(); }
+  document.addEventListener('visibilitychange', () => {
+    if (document.visibilityState === 'hidden') { masqueDepuis = Date.now(); return; }
+    if (masqueDepuis && Date.now() - masqueDepuis > RECHARGE_APRES_MS) { rechargerBorne(); return; }
+    masqueDepuis = 0;
+    garderEcranAllume();
+  });
+  // Page « gelée » par Android puis reprise, ou restaurée depuis le cache de navigation
+  document.addEventListener('resume', rechargerBorne);
+  window.addEventListener('pageshow', e => { if (e.persisted) rechargerBorne(); });
+  // Certains navigateurs n'accordent le verrou qu'après un geste : on retente à chaque appui
+  document.addEventListener('pointerdown', garderEcranAllume, { passive: true });
+  garderEcranAllume();
+
   // ----- Réseau, démarrage -----
   function majReseau() { $('horsLigne').hidden = navigator.onLine; }
   window.addEventListener('online', majReseau);
